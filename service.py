@@ -86,11 +86,12 @@ def create_normal_user(username: str, password: str, name: str, invitation_code:
     new_user.register_time = datetime.datetime.utcnow()
 
     # 邀请码相关
+    existing_invitation = None
     if invitation_code:
         # 验证邀请码
         existing_invitation = InvitationModel.objects(code=invitation_code).first()
         if existing_invitation is None or existing_invitation.available_times <= 0:
-            raise IllegalInvitationCode
+            raise InvalidInvitationCode
         new_user.vip_start_time = existing_invitation.vip_start_time
         new_user.vip_end_time = existing_invitation.vip_end_time
         new_user.remaining_exam_num = existing_invitation.remaining_exam_num
@@ -102,5 +103,14 @@ def create_normal_user(username: str, password: str, name: str, invitation_code:
         new_user.remaining_exam_num = 100
         new_user.invitation_code = ""
 
-    # todo: 创建用户并修改邀请码信息
+    # todo: 开始同步，创建用户并修改邀请码信息
     new_user.save()
+    if invitation_code:
+        # 修改这个邀请码
+        existing_invitation.activate_users.append(email if email != '' else phone)
+        if existing_invitation.available_times <= 0:
+            return InvalidInvitationCode
+        existing_invitation.available_times -= 1
+        existing_invitation.save()
+        logging.info('invitation(id = %s) has been saved' % existing_invitation.id)
+    # todo: 同步结束

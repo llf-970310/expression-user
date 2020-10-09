@@ -20,7 +20,7 @@ class ExamNotExist(ErrorWithCode):
         ErrorWithCode.__init__(self, 4001, "测试不存在")
 
 
-class IllegalInvitationCode(ErrorWithCode):
+class InvalidInvitationCode(ErrorWithCode):
     def __init__(self):
         ErrorWithCode.__init__(self, 4039, "无效的邀请码")
 
