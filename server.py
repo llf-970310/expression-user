@@ -21,6 +21,9 @@ class UserServiceHandler:
     def authenticateWechatUser(self, request: AuthenticateWechatUserRequest) -> AuthenticateWechatUserResponse:
         return handler.verify_wechat_user(request)
 
+    def createUser(self, request: CreateUserRequest) -> CreateUserResponse:
+        return handler.create_user(request)
+
 
 if __name__ == '__main__':
     # init mongo

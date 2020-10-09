@@ -3,34 +3,15 @@ import logging
 
 from config import SystemConfig
 from errors import *
-from manager import token_manager, wx_platform_manager
+from manager import token_manager, wx_platform_manager, user_manager
+from model.invitation import InvitationModel
 from model.user import UserModel
 from user.ttypes import *
 from util import validate_email, validate_phone
 
 
-def create_user(name: str, wx_id: str) -> UserModel:
-    new_user = UserModel()
-    new_user.name = name
-    new_user.wx_id = wx_id
-    new_user.last_login_time = datetime.datetime.utcnow()
-    new_user.register_time = datetime.datetime.utcnow()
-    new_user.save()
-
-    return new_user
-
-
 def verify_user(username: str, password: str) -> str:
-    # 邮箱登录
-    if '@' in username:
-        if not validate_email(username):
-            raise InvalidParam
-        check_user = UserModel.objects(email=username).first()
-    # 手机号登录
-    else:
-        if not validate_phone(username):
-            raise InvalidParam
-        check_user = UserModel.objects(phone=username).first()
+    check_user = user_manager.get_user_by_username(username)
 
     # 判断该用户是否存在
     if not check_user:
@@ -62,10 +43,64 @@ def verify_wechat_user(code: str, nick_name: str) -> str:
 
     # user not exist -> new
     if not check_user:
-        check_user = create_user(name=nick_name, wx_id=openid)
+        check_user = create_wechat_user(name=nick_name, wx_id=openid)
 
     token = token_manager.generate_token(check_user)
     check_user.update(last_login_time=datetime.datetime.utcnow())
     logging.info('verify wechat user successful. nick_name=%s, user_id=%s' % (check_user.name, check_user.id))
 
     return token
+
+
+def create_wechat_user(name: str, wx_id: str) -> UserModel:
+    new_user = UserModel()
+    new_user.name = name
+    new_user.wx_id = wx_id
+    new_user.last_login_time = datetime.datetime.utcnow()
+    new_user.register_time = datetime.datetime.utcnow()
+    new_user.save()
+
+    return new_user
+
+
+def create_normal_user(username: str, password: str, name: str, invitation_code: str):
+    # 判断用户是否已存在
+    exist_user = user_manager.get_user_by_username(username)
+    if exist_user:
+        raise UserAlreadyExist
+
+    # 基本信息配置
+    email, phone = '', ''
+    if '@' in username:
+        email = username
+    else:
+        phone = username
+
+    logging.info('[NewUser][register]email:%s, phone:%s' % (email, phone))
+    new_user = UserModel()
+    new_user.email = email.lower() if email != '' else None
+    new_user.phone = phone if phone != '' else None
+    new_user.set_password(password)
+    new_user.name = name
+    new_user.last_login_time = datetime.datetime.utcnow()
+    new_user.register_time = datetime.datetime.utcnow()
+
+    # 邀请码相关
+    if invitation_code:
+        # 验证邀请码
+        existing_invitation = InvitationModel.objects(code=invitation_code).first()
+        if existing_invitation is None or existing_invitation.available_times <= 0:
+            raise IllegalInvitationCode
+        new_user.vip_start_time = existing_invitation.vip_start_time
+        new_user.vip_end_time = existing_invitation.vip_end_time
+        new_user.remaining_exam_num = existing_invitation.remaining_exam_num
+        new_user.invitation_code = existing_invitation.code
+    else:
+        # 不需要邀请码，使用默认配置
+        new_user.vip_start_time = datetime.datetime(2020, 6, 1, 10, 0, 0)
+        new_user.vip_end_time = datetime.datetime(2020, 8, 15, 10, 0, 0)
+        new_user.remaining_exam_num = 100
+        new_user.invitation_code = ""
+
+    # todo: 创建用户并修改邀请码信息
+    new_user.save()

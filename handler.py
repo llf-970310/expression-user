@@ -40,3 +40,23 @@ def verify_wechat_user(request: AuthenticateWechatUserRequest) -> AuthenticateWe
         fill_status_of_resp(resp, e)
 
     return resp
+
+
+def create_user(request: CreateUserRequest) -> CreateUserResponse:
+    resp = CreateUserResponse()
+    username = request.username.strip().lower()
+    password = request.password.strip()
+    name = request.name
+    invitation_code = request.invitationCode
+
+    if not (username and password and name):
+        fill_status_of_resp(resp, InvalidParam())
+        return resp
+
+    try:
+        service.create_normal_user(username, password, name, invitation_code)
+        fill_status_of_resp(resp)
+    except ErrorWithCode as e:
+        fill_status_of_resp(resp, e)
+
+    return resp

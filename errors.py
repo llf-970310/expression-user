@@ -20,6 +20,11 @@ class ExamNotExist(ErrorWithCode):
         ErrorWithCode.__init__(self, 4001, "测试不存在")
 
 
+class IllegalInvitationCode(ErrorWithCode):
+    def __init__(self):
+        ErrorWithCode.__init__(self, 4039, "无效的邀请码")
+
+
 class AuthenticationFailed(ErrorWithCode):
     def __init__(self):
         ErrorWithCode.__init__(self, 4301, "账号或密码错误")
@@ -28,6 +33,11 @@ class AuthenticationFailed(ErrorWithCode):
 class UserNotExist(ErrorWithCode):
     def __init__(self):
         ErrorWithCode.__init__(self, 4302, "用户不存在")
+
+
+class UserAlreadyExist(ErrorWithCode):
+    def __init__(self):
+        ErrorWithCode.__init__(self, 4303, "用户已存在")
 
 
 class InProcessing(ErrorWithCode):
