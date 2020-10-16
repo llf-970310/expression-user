@@ -92,18 +92,3 @@ class UserModel(Document):
         hash_obj = md5()
         hash_obj.update((password + _MD5_SALT).encode())
         self.__password = hash_obj.hexdigest()
-
-    def can_do_exam(self):
-        """验证是否有评测权限
-
-        Returns:
-            tuple: (status, error)
-            status为True/False (Boolean)
-            error为json格式错误信息（在app.errors中定义）
-        """
-        if self.remaining_exam_num <= 0:
-            return False, errors.No_exam_times
-        now = datetime.datetime.utcnow()
-        if self.vip_end_time <= now:
-            return False, errors.Vip_expired
-        return True, None

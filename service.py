@@ -1,6 +1,7 @@
 import datetime
 import logging
 
+import util
 from config import SystemConfig
 from errors import *
 from manager import token_manager, wx_platform_manager, user_manager
@@ -114,3 +115,32 @@ def create_normal_user(username: str, password: str, name: str, invitation_code:
         existing_invitation.save()
         logging.info('invitation(id = %s) has been saved' % existing_invitation.id)
     # todo: 同步结束
+
+
+def check_exam_permission(user_id: str):
+    user = UserModel.objects(id=user_id).first()
+    if user.remaining_exam_num <= 0:
+        raise NoExamTimes
+    now = datetime.datetime.utcnow()
+    if user.vip_end_time <= now:
+        raise VipExpired
+
+
+def get_user_info(user_id: str) -> UserInfo:
+    user = UserModel.objects(id=user_id).first()
+    if not user:
+        raise UserNotExist
+
+    return UserInfo(
+        role=str(user.role.value),
+        nickName=user.name,
+        email=user.email,
+        phone=user.phone,
+        wechatId=user.wx_id,
+        remainingExamNum=user.remaining_exam_num,
+        registerTime=util.datetime_to_str(user.register_time),
+        lastLoginTime=util.datetime_to_str(user.last_login_time),
+        vipStartTime=util.datetime_to_str(user.vip_start_time),
+        vipEndTime=util.datetime_to_str(user.vip_end_time),
+        questionHistory=[key for key, val in user.questions_history.items()],
+    )

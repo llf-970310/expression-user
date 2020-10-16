@@ -29,11 +29,12 @@ class UserInfo(object):
      - lastLoginTime
      - vipStartTime
      - vipEndTime
+     - questionHistory
 
     """
 
 
-    def __init__(self, role=None, nickName=None, email=None, phone=None, wechatId=None, remainingExamNum=None, registerTime=None, lastLoginTime=None, vipStartTime=None, vipEndTime=None,):
+    def __init__(self, role=None, nickName=None, email=None, phone=None, wechatId=None, remainingExamNum=None, registerTime=None, lastLoginTime=None, vipStartTime=None, vipEndTime=None, questionHistory=None,):
         self.role = role
         self.nickName = nickName
         self.email = email
@@ -44,6 +45,7 @@ class UserInfo(object):
         self.lastLoginTime = lastLoginTime
         self.vipStartTime = vipStartTime
         self.vipEndTime = vipEndTime
+        self.questionHistory = questionHistory
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -85,23 +87,33 @@ class UserInfo(object):
                 else:
                     iprot.skip(ftype)
             elif fid == 7:
-                if ftype == TType.I64:
-                    self.registerTime = iprot.readI64()
+                if ftype == TType.STRING:
+                    self.registerTime = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             elif fid == 8:
-                if ftype == TType.I64:
-                    self.lastLoginTime = iprot.readI64()
+                if ftype == TType.STRING:
+                    self.lastLoginTime = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             elif fid == 9:
-                if ftype == TType.I64:
-                    self.vipStartTime = iprot.readI64()
+                if ftype == TType.STRING:
+                    self.vipStartTime = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             elif fid == 10:
-                if ftype == TType.I64:
-                    self.vipEndTime = iprot.readI64()
+                if ftype == TType.STRING:
+                    self.vipEndTime = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 11:
+                if ftype == TType.LIST:
+                    self.questionHistory = []
+                    (_etype3, _size0) = iprot.readListBegin()
+                    for _i4 in range(_size0):
+                        _elem5 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.questionHistory.append(_elem5)
+                    iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
             else:
@@ -139,25 +151,34 @@ class UserInfo(object):
             oprot.writeI32(self.remainingExamNum)
             oprot.writeFieldEnd()
         if self.registerTime is not None:
-            oprot.writeFieldBegin('registerTime', TType.I64, 7)
-            oprot.writeI64(self.registerTime)
+            oprot.writeFieldBegin('registerTime', TType.STRING, 7)
+            oprot.writeString(self.registerTime.encode('utf-8') if sys.version_info[0] == 2 else self.registerTime)
             oprot.writeFieldEnd()
         if self.lastLoginTime is not None:
-            oprot.writeFieldBegin('lastLoginTime', TType.I64, 8)
-            oprot.writeI64(self.lastLoginTime)
+            oprot.writeFieldBegin('lastLoginTime', TType.STRING, 8)
+            oprot.writeString(self.lastLoginTime.encode('utf-8') if sys.version_info[0] == 2 else self.lastLoginTime)
             oprot.writeFieldEnd()
         if self.vipStartTime is not None:
-            oprot.writeFieldBegin('vipStartTime', TType.I64, 9)
-            oprot.writeI64(self.vipStartTime)
+            oprot.writeFieldBegin('vipStartTime', TType.STRING, 9)
+            oprot.writeString(self.vipStartTime.encode('utf-8') if sys.version_info[0] == 2 else self.vipStartTime)
             oprot.writeFieldEnd()
         if self.vipEndTime is not None:
-            oprot.writeFieldBegin('vipEndTime', TType.I64, 10)
-            oprot.writeI64(self.vipEndTime)
+            oprot.writeFieldBegin('vipEndTime', TType.STRING, 10)
+            oprot.writeString(self.vipEndTime.encode('utf-8') if sys.version_info[0] == 2 else self.vipEndTime)
+            oprot.writeFieldEnd()
+        if self.questionHistory is not None:
+            oprot.writeFieldBegin('questionHistory', TType.LIST, 11)
+            oprot.writeListBegin(TType.STRING, len(self.questionHistory))
+            for iter6 in self.questionHistory:
+                oprot.writeString(iter6.encode('utf-8') if sys.version_info[0] == 2 else iter6)
+            oprot.writeListEnd()
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
 
     def validate(self):
+        if self.role is None:
+            raise TProtocolException(message='Required field role is unset!')
         return
 
     def __repr__(self):
@@ -923,6 +944,137 @@ class UpdateUserInfoResponse(object):
 
     def __ne__(self, other):
         return not (self == other)
+
+
+class CheckExamPermissionRequest(object):
+    """
+    Attributes:
+     - userId
+
+    """
+
+
+    def __init__(self, userId=None,):
+        self.userId = userId
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.STRING:
+                    self.userId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('CheckExamPermissionRequest')
+        if self.userId is not None:
+            oprot.writeFieldBegin('userId', TType.STRING, 1)
+            oprot.writeString(self.userId.encode('utf-8') if sys.version_info[0] == 2 else self.userId)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.userId is None:
+            raise TProtocolException(message='Required field userId is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
+class CheckExamPermissionResponse(object):
+    """
+    Attributes:
+     - statusCode
+     - statusMsg
+
+    """
+
+
+    def __init__(self, statusCode=None, statusMsg=None,):
+        self.statusCode = statusCode
+        self.statusMsg = statusMsg
+
+    def read(self, iprot):
+        if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
+            iprot._fast_decode(self, iprot, [self.__class__, self.thrift_spec])
+            return
+        iprot.readStructBegin()
+        while True:
+            (fname, ftype, fid) = iprot.readFieldBegin()
+            if ftype == TType.STOP:
+                break
+            if fid == 1:
+                if ftype == TType.I32:
+                    self.statusCode = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
+                if ftype == TType.STRING:
+                    self.statusMsg = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            else:
+                iprot.skip(ftype)
+            iprot.readFieldEnd()
+        iprot.readStructEnd()
+
+    def write(self, oprot):
+        if oprot._fast_encode is not None and self.thrift_spec is not None:
+            oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
+            return
+        oprot.writeStructBegin('CheckExamPermissionResponse')
+        if self.statusCode is not None:
+            oprot.writeFieldBegin('statusCode', TType.I32, 1)
+            oprot.writeI32(self.statusCode)
+            oprot.writeFieldEnd()
+        if self.statusMsg is not None:
+            oprot.writeFieldBegin('statusMsg', TType.STRING, 2)
+            oprot.writeString(self.statusMsg.encode('utf-8') if sys.version_info[0] == 2 else self.statusMsg)
+            oprot.writeFieldEnd()
+        oprot.writeFieldStop()
+        oprot.writeStructEnd()
+
+    def validate(self):
+        if self.statusCode is None:
+            raise TProtocolException(message='Required field statusCode is unset!')
+        if self.statusMsg is None:
+            raise TProtocolException(message='Required field statusMsg is unset!')
+        return
+
+    def __repr__(self):
+        L = ['%s=%r' % (key, value)
+             for key, value in self.__dict__.items()]
+        return '%s(%s)' % (self.__class__.__name__, ', '.join(L))
+
+    def __eq__(self, other):
+        return isinstance(other, self.__class__) and self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not (self == other)
 all_structs.append(UserInfo)
 UserInfo.thrift_spec = (
     None,  # 0
@@ -932,10 +1084,11 @@ UserInfo.thrift_spec = (
     (4, TType.STRING, 'phone', 'UTF8', None, ),  # 4
     (5, TType.STRING, 'wechatId', 'UTF8', None, ),  # 5
     (6, TType.I32, 'remainingExamNum', None, None, ),  # 6
-    (7, TType.I64, 'registerTime', None, None, ),  # 7
-    (8, TType.I64, 'lastLoginTime', None, None, ),  # 8
-    (9, TType.I64, 'vipStartTime', None, None, ),  # 9
-    (10, TType.I64, 'vipEndTime', None, None, ),  # 10
+    (7, TType.STRING, 'registerTime', 'UTF8', None, ),  # 7
+    (8, TType.STRING, 'lastLoginTime', 'UTF8', None, ),  # 8
+    (9, TType.STRING, 'vipStartTime', 'UTF8', None, ),  # 9
+    (10, TType.STRING, 'vipEndTime', 'UTF8', None, ),  # 10
+    (11, TType.LIST, 'questionHistory', (TType.STRING, 'UTF8', False), None, ),  # 11
 )
 all_structs.append(AuthenticateRequest)
 AuthenticateRequest.thrift_spec = (
@@ -996,6 +1149,17 @@ UpdateUserInfoRequest.thrift_spec = (
 )
 all_structs.append(UpdateUserInfoResponse)
 UpdateUserInfoResponse.thrift_spec = (
+    None,  # 0
+    (1, TType.I32, 'statusCode', None, None, ),  # 1
+    (2, TType.STRING, 'statusMsg', 'UTF8', None, ),  # 2
+)
+all_structs.append(CheckExamPermissionRequest)
+CheckExamPermissionRequest.thrift_spec = (
+    None,  # 0
+    (1, TType.STRING, 'userId', 'UTF8', None, ),  # 1
+)
+all_structs.append(CheckExamPermissionResponse)
+CheckExamPermissionResponse.thrift_spec = (
     None,  # 0
     (1, TType.I32, 'statusCode', None, None, ),  # 1
     (2, TType.STRING, 'statusMsg', 'UTF8', None, ),  # 2

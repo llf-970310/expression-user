@@ -60,3 +60,38 @@ def create_user(request: CreateUserRequest) -> CreateUserResponse:
         fill_status_of_resp(resp, e)
 
     return resp
+
+
+def check_exam_permission(request: CheckExamPermissionRequest) -> CheckExamPermissionResponse:
+    resp = CheckExamPermissionResponse()
+    user_id = request.userId
+
+    if not user_id:
+        fill_status_of_resp(resp, InvalidParam())
+        return resp
+
+    try:
+        service.check_exam_permission(user_id)
+        fill_status_of_resp(resp)
+    except ErrorWithCode as e:
+        fill_status_of_resp(resp, e)
+
+    return resp
+
+
+def get_user_info(request: GetUserInfoRequest) -> GetUserInfoResponse:
+    resp = GetUserInfoResponse()
+    user_id = request.userId
+
+    if not user_id:
+        fill_status_of_resp(resp, InvalidParam())
+        return resp
+
+    try:
+        user_info = service.get_user_info(user_id)
+        resp.userInfo = user_info
+        fill_status_of_resp(resp)
+    except ErrorWithCode as e:
+        fill_status_of_resp(resp, e)
+
+    return resp

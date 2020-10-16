@@ -20,6 +20,16 @@ class ExamNotExist(ErrorWithCode):
         ErrorWithCode.__init__(self, 4001, "测试不存在")
 
 
+class NoExamTimes(ErrorWithCode):
+    def __init__(self):
+        ErrorWithCode.__init__(self, 4004, "没有剩余考试次数")
+
+
+class VipExpired(ErrorWithCode):
+    def __init__(self):
+        ErrorWithCode.__init__(self, 4008, "评测权限已过期")
+
+
 class InvalidInvitationCode(ErrorWithCode):
     def __init__(self):
         ErrorWithCode.__init__(self, 4039, "无效的邀请码")
@@ -43,6 +53,11 @@ class UserAlreadyExist(ErrorWithCode):
 class InProcessing(ErrorWithCode):
     def __init__(self):
         ErrorWithCode.__init__(self, 5104, "正在处理")
+
+
+class InternalError(ErrorWithCode):
+    def __init__(self):
+        ErrorWithCode.__init__(self, 6000, "服务内部错误")
 
 
 def fill_status_of_resp(resp, error: ErrorWithCode = None):

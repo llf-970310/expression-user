@@ -24,6 +24,12 @@ class UserServiceHandler:
     def createUser(self, request: CreateUserRequest) -> CreateUserResponse:
         return handler.create_user(request)
 
+    def checkExamPermission(self, request: CheckExamPermissionRequest) -> CheckExamPermissionResponse:
+        return handler.check_exam_permission(request)
+
+    def getUserInfo(self, request: GetUserInfoRequest) -> GetUserInfoResponse:
+        return handler.get_user_info(request)
+
 
 if __name__ == '__main__':
     # init mongo

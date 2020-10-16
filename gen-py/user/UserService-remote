@@ -29,6 +29,7 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  CreateUserResponse createUser(CreateUserRequest request)')
     print('  GetUserInfoResponse getUserInfo(GetUserInfoRequest request)')
     print('  UpdateUserInfoResponse updateUserInfo(UpdateUserInfoRequest request)')
+    print('  CheckExamPermissionResponse checkExamPermission(CheckExamPermissionRequest request)')
     print('')
     sys.exit(0)
 
@@ -137,6 +138,12 @@ elif cmd == 'updateUserInfo':
         print('updateUserInfo requires 1 args')
         sys.exit(1)
     pp.pprint(client.updateUserInfo(eval(args[0]),))
+
+elif cmd == 'checkExamPermission':
+    if len(args) != 1:
+        print('checkExamPermission requires 1 args')
+        sys.exit(1)
+    pp.pprint(client.checkExamPermission(eval(args[0]),))
 
 else:
     print('Unrecognized method %s' % cmd)
