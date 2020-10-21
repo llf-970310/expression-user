@@ -30,6 +30,8 @@ if len(sys.argv) <= 1 or sys.argv[1] == '--help':
     print('  GetUserInfoResponse getUserInfo(GetUserInfoRequest request)')
     print('  UpdateUserInfoResponse updateUserInfo(UpdateUserInfoRequest request)')
     print('  CheckExamPermissionResponse checkExamPermission(CheckExamPermissionRequest request)')
+    print('  GetInvitationCodeResponse getInvitationCode(GetInvitationCodeRequest request)')
+    print('  CreateInvitationCodeResponse createInvitationCode(CreateInvitationCodeRequest request)')
     print('')
     sys.exit(0)
 
@@ -144,6 +146,18 @@ elif cmd == 'checkExamPermission':
         print('checkExamPermission requires 1 args')
         sys.exit(1)
     pp.pprint(client.checkExamPermission(eval(args[0]),))
+
+elif cmd == 'getInvitationCode':
+    if len(args) != 1:
+        print('getInvitationCode requires 1 args')
+        sys.exit(1)
+    pp.pprint(client.getInvitationCode(eval(args[0]),))
+
+elif cmd == 'createInvitationCode':
+    if len(args) != 1:
+        print('createInvitationCode requires 1 args')
+        sys.exit(1)
+    pp.pprint(client.createInvitationCode(eval(args[0]),))
 
 else:
     print('Unrecognized method %s' % cmd)

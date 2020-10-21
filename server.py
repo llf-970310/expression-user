@@ -30,6 +30,15 @@ class UserServiceHandler:
     def getUserInfo(self, request: GetUserInfoRequest) -> GetUserInfoResponse:
         return handler.get_user_info(request)
 
+    def updateUserInfo(self, request: UpdateUserInfoRequest) -> UpdateUserInfoResponse:
+        return handler.update_user_info(request)
+
+    def getInvitationCode(self, request: GetInvitationCodeRequest) -> GetInvitationCodeResponse:
+        return handler.get_invitation_code(request)
+
+    def createInvitationCode(self, request: CreateInvitationCodeRequest) -> CreateInvitationCodeResponse:
+        pass
+
 
 if __name__ == '__main__':
     # init mongo

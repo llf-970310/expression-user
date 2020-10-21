@@ -1,5 +1,6 @@
 import datetime
 import logging
+import traceback
 
 import util
 from config import SystemConfig
@@ -144,3 +145,69 @@ def get_user_info(user_id: str) -> UserInfo:
         vipEndTime=util.datetime_to_str(user.vip_end_time),
         questionHistory=[key for key, val in user.questions_history.items()],
     )
+
+
+def update_user_info(user_id: str, invitation_code: str):
+    user = UserModel.objects(id=user_id).first()
+    if not user:
+        raise UserNotExist
+
+    existing_invitation = InvitationModel.objects(code=invitation_code).first()
+    if existing_invitation is None or existing_invitation.available_times <= 0:
+        raise InvalidInvitationCode
+
+    logging.info(
+        '[update_user_info][update_privilege] email:%s, phone:%s, code:%s' % (user.email, user.phone, invitation_code))
+
+    # todo: 开始同步，修改邀请码及用户信息
+    existing_invitation.activate_users.append(user.email if user.email else user.phone)
+    if existing_invitation.available_times <= 0:
+        raise InvalidInvitationCode
+    existing_invitation.available_times -= 1
+    existing_invitation.save()
+    user.vip_start_time = existing_invitation.vip_start_time
+    user.vip_end_time = existing_invitation.vip_end_time
+    user.remaining_exam_num = existing_invitation.remaining_exam_num
+    user.invitation_code = existing_invitation.code
+    user.save()
+    # todo: 同步结束
+
+
+def get_invitation_code(code, create_time_from, create_time_to, available_times, page, page_size) -> (list, int):
+    try:
+        n_from = page_size * (page - 1)
+        d = {}
+        time_limits = {}
+        if create_time_from:
+            time_limits.update({'$gte': util.datetime_fromisoformat(create_time_from)})
+        if create_time_to:
+            time_limits.update({'$lte': util.datetime_fromisoformat(create_time_to)})
+        if time_limits != {}:
+            d.update({'create_time': time_limits})
+        if available_times not in [None, '']:
+            d.update({'available_times': int(available_times)})
+        if code:
+            d.update({'code': code})
+    except Exception as e:
+        traceback.print_exc()
+        raise InvalidParam
+
+    set_manager = InvitationModel.objects(__raw__=d)
+    invitations = set_manager.skip(n_from).limit(page_size)
+    total = set_manager.count()
+
+    result = []
+    for invitation in invitations:
+        result.append(InvitationCode(
+            code=invitation['code'],
+            creator=invitation['creator'],
+            createTime=util.datetime_to_str(invitation['create_time']),
+            availableTimes=invitation['available_times'],
+            vipStartTime=util.datetime_to_str(invitation['vip_start_time']),
+            vipEndTime=util.datetime_to_str(invitation['vip_end_time']),
+            remainingExamNum=invitation['remaining_exam_num'],
+            remainingExerciseNum=invitation['remaining_exercise_num'],
+            activateUsers=invitation['activate_users'],
+        ))
+
+    return result, total

@@ -95,3 +95,45 @@ def get_user_info(request: GetUserInfoRequest) -> GetUserInfoResponse:
         fill_status_of_resp(resp, e)
 
     return resp
+
+
+def update_user_info(request: UpdateUserInfoRequest) -> UpdateUserInfoResponse:
+    resp = UpdateUserInfoResponse()
+    user_id = request.userId
+    invitation_code = request.invitationCode
+
+    if not user_id:
+        fill_status_of_resp(resp, InvalidParam())
+        return resp
+
+    try:
+        service.update_user_info(user_id, invitation_code)
+        fill_status_of_resp(resp)
+    except ErrorWithCode as e:
+        fill_status_of_resp(resp, e)
+
+    return resp
+
+
+def get_invitation_code(request: GetInvitationCodeRequest) -> GetInvitationCodeResponse:
+    resp = GetInvitationCodeResponse()
+    code = request.invitationCode
+    create_time_from = request.createTimeFrom
+    create_time_to = request.createTimeTo
+    available_times = request.availableTimes
+    page = request.page
+    page_size = request.pageSize
+
+    if page < 0 or page_size < 0:
+        fill_status_of_resp(resp, InvalidParam())
+        return resp
+
+    try:
+        code_list, total = service.get_invitation_code(code, create_time_from, create_time_to, available_times, page, page_size)
+        resp.invitationCodeList = code_list
+        resp.total = total
+        fill_status_of_resp(resp)
+    except ErrorWithCode as e:
+        fill_status_of_resp(resp, e)
+
+    return resp
