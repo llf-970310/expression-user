@@ -1245,15 +1245,25 @@ class CheckExamPermissionResponse(object):
 class CreateInvitationCodeRequest(object):
     """
     Attributes:
-     - userId
-     - invitationCode
+     - creator
+     - availableTimes
+     - vipStartTime
+     - vipEndTime
+     - remainingExamNum
+     - remainingExerciseNum
+     - codeNum
 
     """
 
 
-    def __init__(self, userId=None, invitationCode=None,):
-        self.userId = userId
-        self.invitationCode = invitationCode
+    def __init__(self, creator=None, availableTimes=None, vipStartTime=None, vipEndTime=None, remainingExamNum=None, remainingExerciseNum=None, codeNum=None,):
+        self.creator = creator
+        self.availableTimes = availableTimes
+        self.vipStartTime = vipStartTime
+        self.vipEndTime = vipEndTime
+        self.remainingExamNum = remainingExamNum
+        self.remainingExerciseNum = remainingExerciseNum
+        self.codeNum = codeNum
 
     def read(self, iprot):
         if iprot._fast_decode is not None and isinstance(iprot.trans, TTransport.CReadableTransport) and self.thrift_spec is not None:
@@ -1266,12 +1276,37 @@ class CreateInvitationCodeRequest(object):
                 break
             if fid == 1:
                 if ftype == TType.STRING:
-                    self.userId = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                    self.creator = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
                     iprot.skip(ftype)
             elif fid == 2:
+                if ftype == TType.I32:
+                    self.availableTimes = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 3:
                 if ftype == TType.STRING:
-                    self.invitationCode = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                    self.vipStartTime = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 4:
+                if ftype == TType.STRING:
+                    self.vipEndTime = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 5:
+                if ftype == TType.I32:
+                    self.remainingExamNum = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 6:
+                if ftype == TType.I32:
+                    self.remainingExerciseNum = iprot.readI32()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 7:
+                if ftype == TType.I32:
+                    self.codeNum = iprot.readI32()
                 else:
                     iprot.skip(ftype)
             else:
@@ -1284,20 +1319,42 @@ class CreateInvitationCodeRequest(object):
             oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
             return
         oprot.writeStructBegin('CreateInvitationCodeRequest')
-        if self.userId is not None:
-            oprot.writeFieldBegin('userId', TType.STRING, 1)
-            oprot.writeString(self.userId.encode('utf-8') if sys.version_info[0] == 2 else self.userId)
+        if self.creator is not None:
+            oprot.writeFieldBegin('creator', TType.STRING, 1)
+            oprot.writeString(self.creator.encode('utf-8') if sys.version_info[0] == 2 else self.creator)
             oprot.writeFieldEnd()
-        if self.invitationCode is not None:
-            oprot.writeFieldBegin('invitationCode', TType.STRING, 2)
-            oprot.writeString(self.invitationCode.encode('utf-8') if sys.version_info[0] == 2 else self.invitationCode)
+        if self.availableTimes is not None:
+            oprot.writeFieldBegin('availableTimes', TType.I32, 2)
+            oprot.writeI32(self.availableTimes)
+            oprot.writeFieldEnd()
+        if self.vipStartTime is not None:
+            oprot.writeFieldBegin('vipStartTime', TType.STRING, 3)
+            oprot.writeString(self.vipStartTime.encode('utf-8') if sys.version_info[0] == 2 else self.vipStartTime)
+            oprot.writeFieldEnd()
+        if self.vipEndTime is not None:
+            oprot.writeFieldBegin('vipEndTime', TType.STRING, 4)
+            oprot.writeString(self.vipEndTime.encode('utf-8') if sys.version_info[0] == 2 else self.vipEndTime)
+            oprot.writeFieldEnd()
+        if self.remainingExamNum is not None:
+            oprot.writeFieldBegin('remainingExamNum', TType.I32, 5)
+            oprot.writeI32(self.remainingExamNum)
+            oprot.writeFieldEnd()
+        if self.remainingExerciseNum is not None:
+            oprot.writeFieldBegin('remainingExerciseNum', TType.I32, 6)
+            oprot.writeI32(self.remainingExerciseNum)
+            oprot.writeFieldEnd()
+        if self.codeNum is not None:
+            oprot.writeFieldBegin('codeNum', TType.I32, 7)
+            oprot.writeI32(self.codeNum)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
 
     def validate(self):
-        if self.userId is None:
-            raise TProtocolException(message='Required field userId is unset!')
+        if self.creator is None:
+            raise TProtocolException(message='Required field creator is unset!')
+        if self.codeNum is None:
+            raise TProtocolException(message='Required field codeNum is unset!')
         return
 
     def __repr__(self):
@@ -1315,13 +1372,15 @@ class CreateInvitationCodeRequest(object):
 class CreateInvitationCodeResponse(object):
     """
     Attributes:
+     - codeList
      - statusCode
      - statusMsg
 
     """
 
 
-    def __init__(self, statusCode=None, statusMsg=None,):
+    def __init__(self, codeList=None, statusCode=None, statusMsg=None,):
+        self.codeList = codeList
         self.statusCode = statusCode
         self.statusMsg = statusMsg
 
@@ -1335,11 +1394,21 @@ class CreateInvitationCodeResponse(object):
             if ftype == TType.STOP:
                 break
             if fid == 1:
+                if ftype == TType.LIST:
+                    self.codeList = []
+                    (_etype17, _size14) = iprot.readListBegin()
+                    for _i18 in range(_size14):
+                        _elem19 = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
+                        self.codeList.append(_elem19)
+                    iprot.readListEnd()
+                else:
+                    iprot.skip(ftype)
+            elif fid == 2:
                 if ftype == TType.I32:
                     self.statusCode = iprot.readI32()
                 else:
                     iprot.skip(ftype)
-            elif fid == 2:
+            elif fid == 3:
                 if ftype == TType.STRING:
                     self.statusMsg = iprot.readString().decode('utf-8') if sys.version_info[0] == 2 else iprot.readString()
                 else:
@@ -1354,18 +1423,27 @@ class CreateInvitationCodeResponse(object):
             oprot.trans.write(oprot._fast_encode(self, [self.__class__, self.thrift_spec]))
             return
         oprot.writeStructBegin('CreateInvitationCodeResponse')
+        if self.codeList is not None:
+            oprot.writeFieldBegin('codeList', TType.LIST, 1)
+            oprot.writeListBegin(TType.STRING, len(self.codeList))
+            for iter20 in self.codeList:
+                oprot.writeString(iter20.encode('utf-8') if sys.version_info[0] == 2 else iter20)
+            oprot.writeListEnd()
+            oprot.writeFieldEnd()
         if self.statusCode is not None:
-            oprot.writeFieldBegin('statusCode', TType.I32, 1)
+            oprot.writeFieldBegin('statusCode', TType.I32, 2)
             oprot.writeI32(self.statusCode)
             oprot.writeFieldEnd()
         if self.statusMsg is not None:
-            oprot.writeFieldBegin('statusMsg', TType.STRING, 2)
+            oprot.writeFieldBegin('statusMsg', TType.STRING, 3)
             oprot.writeString(self.statusMsg.encode('utf-8') if sys.version_info[0] == 2 else self.statusMsg)
             oprot.writeFieldEnd()
         oprot.writeFieldStop()
         oprot.writeStructEnd()
 
     def validate(self):
+        if self.codeList is None:
+            raise TProtocolException(message='Required field codeList is unset!')
         if self.statusCode is None:
             raise TProtocolException(message='Required field statusCode is unset!')
         if self.statusMsg is None:
@@ -1529,11 +1607,11 @@ class GetInvitationCodeResponse(object):
             if fid == 1:
                 if ftype == TType.LIST:
                     self.invitationCodeList = []
-                    (_etype17, _size14) = iprot.readListBegin()
-                    for _i18 in range(_size14):
-                        _elem19 = InvitationCode()
-                        _elem19.read(iprot)
-                        self.invitationCodeList.append(_elem19)
+                    (_etype24, _size21) = iprot.readListBegin()
+                    for _i25 in range(_size21):
+                        _elem26 = InvitationCode()
+                        _elem26.read(iprot)
+                        self.invitationCodeList.append(_elem26)
                     iprot.readListEnd()
                 else:
                     iprot.skip(ftype)
@@ -1565,8 +1643,8 @@ class GetInvitationCodeResponse(object):
         if self.invitationCodeList is not None:
             oprot.writeFieldBegin('invitationCodeList', TType.LIST, 1)
             oprot.writeListBegin(TType.STRUCT, len(self.invitationCodeList))
-            for iter20 in self.invitationCodeList:
-                iter20.write(oprot)
+            for iter27 in self.invitationCodeList:
+                iter27.write(oprot)
             oprot.writeListEnd()
             oprot.writeFieldEnd()
         if self.total is not None:
@@ -1711,14 +1789,20 @@ CheckExamPermissionResponse.thrift_spec = (
 all_structs.append(CreateInvitationCodeRequest)
 CreateInvitationCodeRequest.thrift_spec = (
     None,  # 0
-    (1, TType.STRING, 'userId', 'UTF8', None, ),  # 1
-    (2, TType.STRING, 'invitationCode', 'UTF8', None, ),  # 2
+    (1, TType.STRING, 'creator', 'UTF8', None, ),  # 1
+    (2, TType.I32, 'availableTimes', None, None, ),  # 2
+    (3, TType.STRING, 'vipStartTime', 'UTF8', None, ),  # 3
+    (4, TType.STRING, 'vipEndTime', 'UTF8', None, ),  # 4
+    (5, TType.I32, 'remainingExamNum', None, None, ),  # 5
+    (6, TType.I32, 'remainingExerciseNum', None, None, ),  # 6
+    (7, TType.I32, 'codeNum', None, None, ),  # 7
 )
 all_structs.append(CreateInvitationCodeResponse)
 CreateInvitationCodeResponse.thrift_spec = (
     None,  # 0
-    (1, TType.I32, 'statusCode', None, None, ),  # 1
-    (2, TType.STRING, 'statusMsg', 'UTF8', None, ),  # 2
+    (1, TType.LIST, 'codeList', (TType.STRING, 'UTF8', False), None, ),  # 1
+    (2, TType.I32, 'statusCode', None, None, ),  # 2
+    (3, TType.STRING, 'statusMsg', 'UTF8', None, ),  # 3
 )
 all_structs.append(GetInvitationCodeRequest)
 GetInvitationCodeRequest.thrift_spec = (

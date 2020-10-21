@@ -129,9 +129,36 @@ def get_invitation_code(request: GetInvitationCodeRequest) -> GetInvitationCodeR
         return resp
 
     try:
-        code_list, total = service.get_invitation_code(code, create_time_from, create_time_to, available_times, page, page_size)
+        code_list, total = service.get_invitation_code(code, create_time_from, create_time_to, available_times, page,
+                                                       page_size)
         resp.invitationCodeList = code_list
         resp.total = total
+        fill_status_of_resp(resp)
+    except ErrorWithCode as e:
+        fill_status_of_resp(resp, e)
+
+    return resp
+
+
+def create_invitation_code(request: CreateInvitationCodeRequest) -> CreateInvitationCodeResponse:
+    resp = CreateInvitationCodeResponse()
+
+    creator = request.creator
+    vip_start_time = request.vipStartTime
+    vip_end_time = request.vipEndTime
+    available_times = request.availableTimes
+    remaining_exam_num = request.remainingExamNum
+    remaining_exercise_num = request.remainingExerciseNum
+    code_num = request.codeNum
+
+    if not creator:
+        fill_status_of_resp(resp, InvalidParam())
+        return resp
+
+    try:
+        code_list = service.create_invitation_code(creator, vip_start_time, vip_end_time, available_times,
+                                                   remaining_exam_num, remaining_exercise_num, code_num)
+        resp.codeList = code_list
         fill_status_of_resp(resp)
     except ErrorWithCode as e:
         fill_status_of_resp(resp, e)

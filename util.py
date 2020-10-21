@@ -123,3 +123,14 @@ def _parse_isoformat_time(tstr):
             tzi = timezone(tzsign * td)
     time_comps.append(tzi)
     return time_comps
+
+
+al_num = '1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+
+def generate_random_code(length=4):
+    import random
+    s = ''
+    for i in range(length):
+        s += random.choice(al_num)
+    return s

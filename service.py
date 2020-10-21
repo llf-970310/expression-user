@@ -211,3 +211,55 @@ def get_invitation_code(code, create_time_from, create_time_to, available_times,
         ))
 
     return result, total
+
+
+def create_invitation_code(creator, vip_start_time, vip_end_time, available_times, remaining_exam_num,
+                           remaining_exercise_num, code_num) -> list:
+    try:
+        vip_start_time = datetime.datetime.utcfromtimestamp(float(vip_start_time))
+        vip_end_time = datetime.datetime.utcfromtimestamp(float(vip_end_time))
+    except Exception as e:
+        raise InvalidParam
+
+    '''
+    form 校验规则:
+        1. vipStartTime必须在vipEndTime之前
+        2. vipEndTime必须在现在之后
+        3. remainingExamNum和remainingExerciseNum至少有一个>0（可用考试、练习次数）
+        4. availableTimes要大于0（邀请码可用人数）
+        5. codeNum要大于0（邀请码个数）
+        6. 各项不为空
+    '''
+
+    # form 校验
+    if not vip_start_time or not vip_end_time or not available_times:
+        raise InvalidParam
+    if vip_start_time >= vip_end_time:  # rule 1
+        raise InvalidParam
+    if vip_end_time <= datetime.datetime.utcnow():  # rule 2
+        raise InvalidParam
+    if not (remaining_exam_num > 0 or remaining_exercise_num > 0):  # rule 3
+        raise InvalidParam
+    if available_times <= 0:  # rule 4
+        raise InvalidParam
+    if code_num <= 0:
+        raise InvalidParam
+
+    invitation_codes = []
+    for i in range(0, code_num):
+        invitation = InvitationModel()
+        invitation.creator = creator
+        invitation.activate_users = []
+        invitation.vip_start_time = vip_start_time
+        invitation.vip_end_time = vip_end_time
+        invitation.remaining_exam_num = remaining_exam_num
+        invitation.remaining_exercise_num = remaining_exercise_num
+        invitation.available_times = available_times
+        invitation.code = util.generate_random_code(SystemConfig.INVITATION_CODE_LEN)
+        invitation.create_time = datetime.datetime.utcnow()
+        invitation.save(invitation)
+
+        logging.info('invitation info:\n%s' % invitation.__str__())
+        invitation_codes.append(invitation.code)
+
+    return invitation_codes

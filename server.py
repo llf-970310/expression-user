@@ -37,7 +37,7 @@ class UserServiceHandler:
         return handler.get_invitation_code(request)
 
     def createInvitationCode(self, request: CreateInvitationCodeRequest) -> CreateInvitationCodeResponse:
-        pass
+        return handler.create_invitation_code(request)
 
 
 if __name__ == '__main__':
