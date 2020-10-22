@@ -2,8 +2,10 @@ import service
 
 from user.ttypes import *
 from errors import *
+from util import func_log
 
 
+@func_log
 def verify_user(request: AuthenticateRequest) -> AuthenticateResponse:
     resp = AuthenticateResponse()
     username = request.username.strip().lower()
@@ -23,6 +25,7 @@ def verify_user(request: AuthenticateRequest) -> AuthenticateResponse:
     return resp
 
 
+@func_log
 def verify_wechat_user(request: AuthenticateWechatUserRequest) -> AuthenticateWechatUserResponse:
     resp = AuthenticateWechatUserResponse()
     code = request.code
@@ -42,6 +45,7 @@ def verify_wechat_user(request: AuthenticateWechatUserRequest) -> AuthenticateWe
     return resp
 
 
+@func_log
 def create_user(request: CreateUserRequest) -> CreateUserResponse:
     resp = CreateUserResponse()
     username = request.username.strip().lower()
@@ -62,6 +66,7 @@ def create_user(request: CreateUserRequest) -> CreateUserResponse:
     return resp
 
 
+@func_log
 def check_exam_permission(request: CheckExamPermissionRequest) -> CheckExamPermissionResponse:
     resp = CheckExamPermissionResponse()
     user_id = request.userId
@@ -79,6 +84,7 @@ def check_exam_permission(request: CheckExamPermissionRequest) -> CheckExamPermi
     return resp
 
 
+@func_log
 def get_user_info(request: GetUserInfoRequest) -> GetUserInfoResponse:
     resp = GetUserInfoResponse()
     user_id = request.userId
@@ -97,6 +103,7 @@ def get_user_info(request: GetUserInfoRequest) -> GetUserInfoResponse:
     return resp
 
 
+@func_log
 def update_user_info(request: UpdateUserInfoRequest) -> UpdateUserInfoResponse:
     resp = UpdateUserInfoResponse()
     user_id = request.userId
@@ -115,6 +122,7 @@ def update_user_info(request: UpdateUserInfoRequest) -> UpdateUserInfoResponse:
     return resp
 
 
+@func_log
 def get_invitation_code(request: GetInvitationCodeRequest) -> GetInvitationCodeResponse:
     resp = GetInvitationCodeResponse()
     code = request.invitationCode
@@ -140,6 +148,7 @@ def get_invitation_code(request: GetInvitationCodeRequest) -> GetInvitationCodeR
     return resp
 
 
+@func_log
 def create_invitation_code(request: CreateInvitationCodeRequest) -> CreateInvitationCodeResponse:
     resp = CreateInvitationCodeResponse()
 
