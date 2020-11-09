@@ -3,6 +3,11 @@ MAINTAINER lilf <lf97310@gmail.com>
 
 ENV TZ=Asia/Shanghai
 
+RUN sed -i s@/archive.ubuntu.com/@/mirrors.tuna.tsinghua.edu.cn/@g /etc/apt/sources.list && \
+    apt-get clean && \
+    apt-get update -y && \
+    apt-get install -y python3.6 python3-pip python3.6-dev
+
 RUN apt-get update -y && \
     apt-get install -y python3.6 python3-pip python3.6-dev
 
