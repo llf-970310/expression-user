@@ -28,11 +28,3 @@ class MongoConfig:
     user = 'iselab'
     password = 'iselab###nju.cn'
     db = 'expression'
-
-
-class SystemConfig:
-    IGNORE_LOGIN_PASSWORD = False
-    INVITATION_CODE_LEN = 16
-    # 微信小程序
-    WX_APP_APPID = ''
-    WX_APP_SECRET = ''

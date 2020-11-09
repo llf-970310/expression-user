@@ -3,7 +3,7 @@ import logging
 import traceback
 
 import util
-from config import SystemConfig
+from client import apollo_client
 from errors import *
 from manager import token_manager, wx_platform_manager, user_manager
 from model.invitation import InvitationModel
@@ -14,13 +14,17 @@ from util import validate_email, validate_phone
 
 def verify_user(username: str, password: str) -> str:
     check_user = user_manager.get_user_by_username(username)
+    ignore_password = apollo_client.get_value(key="IGNORE_LOGIN_PASSWORD", namespace="application")
+    if not ignore_password:
+        logging.error("[verify_user] get config from apollo failed")
+        raise InternalError
 
     # 判断该用户是否存在
     if not check_user:
         raise UserNotExist
 
     # 判断密码是否正确
-    if (not SystemConfig.IGNORE_LOGIN_PASSWORD) and (not check_user.check_password(password)):
+    if ignore_password == "False" and (not check_user.check_password(password)):
         raise AuthenticationFailed
 
     token = token_manager.generate_token(check_user)
@@ -31,11 +35,17 @@ def verify_user(username: str, password: str) -> str:
 
 
 def verify_wechat_user(code: str, nick_name: str) -> str:
+    app_id = apollo_client.get_value(key="WX_APP_APPID", namespace="application")
+    app_secret = apollo_client.get_value(key="WX_APP_SECRET", namespace="application")
+    if not app_id or not app_secret:
+        logging.error("[verify_wechat_user] get config from apollo failed")
+        raise InternalError
+
     # code -> openid
     err_code, _, openid = wx_platform_manager.get_sessionkey_openid(
         code,
-        appid=SystemConfig.WX_APP_APPID,
-        secret=SystemConfig.WX_APP_SECRET
+        appid=app_id,
+        secret=app_secret
     )
     if err_code:
         raise ErrorWithCode(code=int(err_code), msg='获取openid出错')
@@ -245,6 +255,11 @@ def create_invitation_code(creator, vip_start_time, vip_end_time, available_time
     if code_num <= 0:
         raise InvalidParam
 
+    invitation_code_len = apollo_client.get_value(key="INVITATION_CODE_LEN", namespace="application")
+    if not invitation_code_len:
+        logging.error("[create_invitation_code] get config from apollo failed")
+        raise InternalError
+
     invitation_codes = []
     for i in range(0, code_num):
         invitation = InvitationModel()
@@ -255,7 +270,7 @@ def create_invitation_code(creator, vip_start_time, vip_end_time, available_time
         invitation.remaining_exam_num = remaining_exam_num
         invitation.remaining_exercise_num = remaining_exercise_num
         invitation.available_times = available_times
-        invitation.code = util.generate_random_code(SystemConfig.INVITATION_CODE_LEN)
+        invitation.code = util.generate_random_code(int(invitation_code_len))
         invitation.create_time = datetime.datetime.utcnow()
         invitation.save(invitation)
 
