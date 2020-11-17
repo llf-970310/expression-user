@@ -9,7 +9,7 @@ def generate_token(user: UserModel) -> str:
         "uuid": str(user.id),
         "nick_name": user.name,
         "role": user.role.value,
-        "exp": int(time.time()) + 3600
+        "exp": int(time.time()) + 3600 * 3
     }
     token = jwt.encode(payload, "secret", algorithm="HS256")
     return token.decode("utf-8")
