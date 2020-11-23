@@ -65,7 +65,7 @@ if __name__ == '__main__':
     # init thrift server
     exam_handler = UserServiceHandler()
     processor = UserService.Processor(exam_handler)
-    transport = TSocket.TServerSocket(host='127.0.0.1', port=9092)
+    transport = TSocket.TServerSocket(host='0.0.0.0', port=9092)
     tfactory = TTransport.TBufferedTransportFactory()
     pfactory = TBinaryProtocol.TBinaryProtocolFactory()
 
